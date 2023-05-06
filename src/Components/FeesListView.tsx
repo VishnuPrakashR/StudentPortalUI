@@ -1,41 +1,37 @@
-import { Key, useEffect, useState } from "react";
+import { Key, SyntheticEvent, useEffect, useState } from "react";
 import { Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
 import { fetchData } from "../api";
 
 interface RowData {
     No: Number, 
     Id: Key,
-    Date: String,
-    CheckIn: String,
-    CheckInDev: String,
-    CheckOut: String,
-    CheckOutDev: String,
-    TotalHours: String
+    Reference: String,
+    Amount: String,
+    Type: String
+    isPaid: boolean
 }
 
 const FeesListView = () => {
     const [loadingData, setLoadingData] = useState(true);
-    const [markLoading, setMarkLoading] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
     const [data, setData] = useState([]);
     const [rowsLoading, setRowsLoading] = useState(false)
-    const query = new URLSearchParams(useLocation().search);
-    const employee = query.get('employee')
-    async function markAttendance() {
-      setMarkLoading(true)
+    async function payFees(event:SyntheticEvent) {
+      const reference = event.currentTarget.getAttribute('data-reference')
+      setPaymentLoading(true)
       const response = await fetchData({
-        path: "get/HR/Employees/MarkAttendance/",
-        body: {employee}
+        path: "student/Fees/Pay/",
+        body: {reference}
         })
         console.log(response.data)
-        getAttendanceList()
-        setMarkLoading(false)
+        getFeeList()
+        setPaymentLoading(false)
     }
-    async function getAttendanceList(){
+    async function getFeeList(){
         setRowsLoading(true)
         const response = await fetchData({
-            path: "get/HR/Employees/getAttendance/",
-            body: {employee}
+            path: "student/Fees/",
+            body: {}
             })
             setData(response.data);
             setLoadingData(false);
@@ -43,10 +39,9 @@ const FeesListView = () => {
     }
     useEffect(()=>{ 
         if (loadingData) {
-            getAttendanceList()
+            getFeeList()
         }
-        console.log(data)
-    }, [getAttendanceList, loadingData])
+    }, [data, loadingData])
 
   return (
     <Card>
@@ -54,20 +49,10 @@ const FeesListView = () => {
         <Card.Title>
           <Row>
             <Col md={6} className="d-flex">
-              Attendance List
+              Fees List
             </Col>
             <Col className="d-flex justify-content-end">
-              <Button
-                variant="primary"
-                className="btn-sm float-right pull-right"
-                onClick={markAttendance}
-              >
-                {
-                  markLoading?
-                  <Spinner animation="border" size="sm" /> :
-                "Mark Attendance"
-}
-              </Button>
+              
             </Col>
           </Row>
         </Card.Title>
@@ -76,12 +61,10 @@ const FeesListView = () => {
             <thead>
               <tr>
                 <th>No</th>
-                <th>Date</th>
-                <th>CheckIn</th>
-                <th>CheckIn Device</th>
-                <th>CheckOut</th>
-                <th>CheckOut Device</th>
-                <th>Total Hours</th>
+                <th>Reference</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -91,12 +74,21 @@ const FeesListView = () => {
                     </tr>:
                 data.map((rowData: RowData) => <tr key={rowData.Id}>
                         <td>{String(rowData.No)}</td>
-                        <td>{rowData.Date}</td>
-                        <td>{rowData.CheckIn}</td>
-                        <td>{rowData.CheckInDev}</td>
-                        <td>{rowData.CheckOut}</td>
-                        <td>{rowData.CheckOutDev}</td>
-                        <td>{rowData.TotalHours}</td>
+                        <td>{rowData.Reference}</td>
+                        <td>{rowData.Amount}</td>
+                        <td>{rowData.Type}</td>
+                        <td>{rowData.isPaid?"Paid":<Button
+                              variant="success"
+                              className="btn-sm float-right pull-right"
+                              onClick={payFees}
+                              data-reference={rowData.Reference}
+                            >
+                {
+                  paymentLoading?
+                  <Spinner animation="border" size="sm" /> :
+                "Pay"
+}
+              </Button>}</td>
                     </tr>)
               }
             </tbody>

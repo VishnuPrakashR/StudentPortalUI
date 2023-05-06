@@ -16,7 +16,7 @@ const FeesList = () => {
         <Body fluid>
             <Head>
                 <Col md={12} xs={12}>
-                    <h2>HRM</h2>
+                    <h2>LBU Student Portal</h2>
                 </Col> 
             </Head>
             <Row>
