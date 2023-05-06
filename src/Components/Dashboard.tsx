@@ -118,6 +118,7 @@ const Dashboard = () => {
                             </div>
                             <div  className="d-flex justify-content-center align-items-center">
                             <Table bordered>
+                                <tbody>
                             {
                             rowsLoading? <tr><td colSpan={2}><div  className="d-flex justify-content-center align-items-center">
                                         <Spinner animation="border" size="sm" /></div></td>
@@ -155,6 +156,7 @@ const Dashboard = () => {
                                                 </tr>
                                                     </>                                
                             }
+                            </tbody>
                             </Table>
                             </div>
                             </Card.Body>
@@ -169,6 +171,7 @@ const Dashboard = () => {
                                 <div>
                                 <Form onSubmit={handleEnrollment}>
                                     <Table bordered>
+                                        <tbody>
                                     {
                                         loadingEnrollData?
                                         <tr><td colSpan={2}><div  className="d-flex justify-content-center align-items-center">
@@ -226,6 +229,7 @@ const Dashboard = () => {
                                             </tr>
                                         </>
                                     }
+                                    </tbody>
                                     </Table>
                                     </Form>
                                 </div>
